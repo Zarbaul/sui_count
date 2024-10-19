@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        #stopwatch, #counter45, #time_log {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #start_button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Counter</h1>
+    <button id="start_button">Go</button>
+
+    <div id="time_log"></div>
+    <div id="stopwatch">00:00:00.00</div>
+    <div id="day_year">Days: 0, Years: 0</div>
+    <div id="counter45">Number of suicides worldwide: 0</div>
+    <div>4 in 5 of these have been men</div>
+    <div>Please, ask your friends how they are. If you need help, reach out.</div>
+
+    <script>
+        const startButton = document.getElementById('start_button');
+        const stopwatchDisplay = document.getElementById('stopwatch');
+        const counter45Display = document.getElementById('counter45');
+        const timeLogDisplay = document.getElementById('time_log');
+        const dayYearDisplay = document.getElementById('day_year');
+
+        let intervalId;
+
+        startButton.addEventListener('click', () => {
+            fetch('/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    timeLogDisplay.textContent = "Stopwatch started at: " + data.time_log;
+                    if (!intervalId) {
+                        intervalId = setInterval(updateStatus, 100);
+                    }
+                });
+        });
+
+        function updateStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    stopwatchDisplay.textContent = data.time;
+                    counter45Display.textContent = "Number of suicides worldwide: " + data.counter_45;
+                    dayYearDisplay.textContent = "Days: " + data.days + ", Years: " + data.years;
+                });
+        }
+    </script>
+</body>
+</html>
